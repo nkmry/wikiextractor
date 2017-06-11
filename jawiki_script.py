@@ -36,24 +36,9 @@ def postprocess(filename: str):
     s = delete_regexps("<[^>]*>", s)
     for _ in range(5): # to handle nested brackets
         s = delete_regexps("[(（][^()（）]*[)）]", s)
-        #s = delete_regexps("\([^()]*\)", s)
-        #s = delete_regexps("\（[^（）]*\）", s)
         s = delete_regexps("(|)|（|）", s)
     with (file_path.parent / ('modified_' + file_path.name)).open('w') as f:
         f.write(s)
-
-def postprocess2(filename: str):
-    file_path = Path(filename)
-    with file_path.open() as f:
-        s = f.read()
-    for _ in range(5): # to handle nested brackets
-        s = delete_regexps("[(（][^()（）]*[)）]", s)
-        #s = delete_regexps("\([^()]*\)", s)
-        #s = delete_regexps("\（[^（）]*\）", s)
-        s = delete_regexps("(|)|（|）", s)
-    with (file_path.parent / ('modified_' + file_path.name)).open('w') as f:
-        f.write(s)
-
 
 def main():
     parser = argparse.ArgumentParser()
@@ -69,11 +54,11 @@ def main():
         os.system("./WikiExtractor.py -b 20M -o {out} --filter_disambig_pages"
                " -it abbr,b,big,br,div,tt,sup,sub,small,span,source,u,nowiki,"
                "blockquote,li,ol,ul,ruby -de gallery,timeline,noinclude "
-               "{jawiki} > extractor.log".format(jawiki=orgs.wiki, out=orgs.out))
+               "{jawiki} > extractor.log".format(jawiki=args.wiki, out=args.out))
 
     fs = glob.glob(str(out_dir / '*/*'))
     with Pool(int(args.processes)) as p:
-        p.map(postprocess2, fs)
+        p.map(postprocess, fs)
 
 if __name__ == '__main__':
     main()
