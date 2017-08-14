@@ -96,7 +96,10 @@ def postprocess(filename: str):
         s = delete_regexps("[(（][^()（）]*[)）]", s)
         s = delete_regexps("(|)|（|）", s)
     s = normalize_neologd(s)
-    with (file_path.parent / ('modified_' + file_path.name)).open('w') as f:
+    out_dir = file_path.parent / 'modified/'
+    if not out_dir.exists():
+        out_dir.mkdir()
+    with (out_dir / file_path.name).open('w') as f:
         f.write(s)
 
 
